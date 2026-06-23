@@ -16,3 +16,4 @@ public record struct Radius(float Value);
 
 public record struct RenderShape(Shapes Value);
 public record struct RenderColor(Color Value);
+public record struct Size(float X, float Y);

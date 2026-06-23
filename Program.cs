@@ -2,6 +2,7 @@
 using fennecs;
 using Raylib_cs;
 using Core;
+using System.Text;
 
 const double SPAWN_DURATION = 0.1;
 const int WINDOWS_WIDTH = 800;
@@ -15,12 +16,11 @@ float spawnAccum = 0;
 void SystemSpawn(float dt) {
     spawnAccum += dt;
 	while (spawnAccum > SPAWN_DURATION) {
-		world.Spawn()
-			.Add(new Position(100, 100))
-			.Add(new Velocity(200, 90))
-			.Add(new RenderColor(Color.Red))
-			.Add(new RenderShape(Shapes.Box))
-			.Add(new Radius(10));
+        world.Spawn()
+            .Add(new Position(100, 100))
+            .Add(new Velocity(200, 90))
+            .Add(new RenderColor(Color.Red))
+            .Add(new RenderShape(Shapes.Circle));
 
 		spawnAccum -= (float)SPAWN_DURATION;
 	}
@@ -52,20 +52,50 @@ void SystemBounce()
         }
     });
 }
-//                               MAKE COLOR OPTIONAL AS WELL!!!  MAKE RADIUS OPTIONAL LATER!!!!
-var stream_render = world.Stream<Position, RenderColor, RenderShape, Radius>();
+
+var stream_no_scale = world.Query().Not<Scale,RenderShape>().Stream();
+var stream_no_color = world.Query().Not<RenderColor, RenderShape>();
+var stream_no_size = world.Query<RenderShape>().Not<Size>().Stream();
+var stream_no_radius = world.Query<RenderShape>().Not<Radius>().Stream();
+void SystemRenderDefaults() {
+    stream_no_scale.For(
+        static (in Entity, entity) => {
+            entity.Add(new Scale(1));
+        });
+    stream_no_color.For(
+        static (in Entity entity) => {
+            entity.Add(new RenderColor(Color.White));
+        });
+    
+    stream_no_size.For(
+        static (in Entity, entity, ref RenderShape shape) => {
+            if (shape.Value == Shapes.Box) {
+                entity.Add(new Size(50, 50));
+            }
+        });
+    stream_no_radius.For(
+        static (in Entity entity, ref RenderShape shape) => {
+            if (shape.Value == Shapes.Circle) {
+                entity.Add(new Radius(10));
+            }
+        });
+}
+
+var stream_render = world.Stream<Position, Scale, RenderShape, RenderColor>();
 void SystemRenderEntities() {
-	stream_render.For(//                               REMOVE THIS LATER                         REMOVE THIS LATER
-	static (in Entity entity, ref Position pos, ref RenderColor color, ref RenderShape shape, ref Radius cradius) => {
-        (int x, int y) = ((int)pos.X, (int)pos.Y);
-        int radius = (int)cradius.Value;
+	stream_render.For(
+	static (in Entity entity, ref Position pos, ref Scale cscale, ref RenderShape shape, ref RenderColor, color) => {
+        (float x, float y) = (pos.X, pos.Y);
+        float scale = cscale.Value;
         
         switch (shape.Value) {
             case Shapes.Circle:
-                Raylib.DrawCircle(x, y, radius, color.Value);
+                float radius = entity.Get<Radius>().Value * scale;
+                Raylib.DrawCircleV(x, y, radius, color.Value);
                 break;
             case Shapes.Box: {
-                Raylib.DrawRectangle(x, y, radius, radius, color.Value);
+                var size = entity.Get<Size>();
+                Raylib.DrawRectangleV(x, y, size.X * scale, size.Y * scale, color.Value);
                 break;
             }
         }
@@ -79,6 +109,7 @@ void MainLoop(float dt) {
 
 	Raylib.ClearBackground(Color.White); // Do this ONCE at the start
     Raylib.DrawText("Hello, world!", 12, 12, 20, Color.Black);
+    SystemRenderDefaults();
 	SystemRenderEntities();
 }
 
