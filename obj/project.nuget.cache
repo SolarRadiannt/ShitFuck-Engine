@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "ZDpLZ4mIEyk=",
+  "dgSpecHash": "PWg3dlw/NAE=",
   "success": true,
-  "projectFilePath": "C:\\Personal\\Projects\\ShitFuck-Engine\\ShitFuckEngine.csproj",
+  "projectFilePath": "E:\\Projects\\Csharp\\ShitFuck Engine\\ShitFuckEngine.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\ThinkPad\\.nuget\\packages\\fennecs\\0.6.12\\fennecs.0.6.12.nupkg.sha512",
-    "C:\\Users\\ThinkPad\\.nuget\\packages\\raylib-cs\\8.0.0\\raylib-cs.8.0.0.nupkg.sha512"
+    "C:\\Users\\naufal-jf\\.nuget\\packages\\fennecs\\0.6.12\\fennecs.0.6.12.nupkg.sha512",
+    "C:\\Users\\naufal-jf\\.nuget\\packages\\raylib-cs\\8.0.0\\raylib-cs.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }

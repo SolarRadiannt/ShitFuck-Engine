@@ -45,3 +45,4 @@ C:\Personal\Projects\ShitFuck-Engine\obj\Debug\net10.0\refint\ShitFuckEngine.dll
 C:\Personal\Projects\ShitFuck-Engine\obj\Debug\net10.0\ShitFuckEngine.pdb
 C:\Personal\Projects\ShitFuck-Engine\obj\Debug\net10.0\ShitFuckEngine.genruntimeconfig.cache
 C:\Personal\Projects\ShitFuck-Engine\obj\Debug\net10.0\ref\ShitFuckEngine.dll
+E:\Projects\Csharp\ShitFuck Engine\obj\Debug\net10.0\ShitFuckEngine.sourcelink.json
