@@ -102,19 +102,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\naufal-jf\\.nuget\\packages\\": {}
+    "C:\\Users\\ThinkPad\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projects\\Csharp\\ShitFuck Engine\\ShitFuckEngine.csproj",
+      "projectUniqueName": "C:\\Personal\\Projects\\ShitFuck-Engine\\ShitFuckEngine.csproj",
       "projectName": "ShitFuckEngine",
-      "projectPath": "E:\\Projects\\Csharp\\ShitFuck Engine\\ShitFuckEngine.csproj",
-      "packagesPath": "C:\\Users\\naufal-jf\\.nuget\\packages\\",
-      "outputPath": "E:\\Projects\\Csharp\\ShitFuck Engine\\obj\\",
+      "projectPath": "C:\\Personal\\Projects\\ShitFuck-Engine\\ShitFuckEngine.csproj",
+      "packagesPath": "C:\\Users\\ThinkPad\\.nuget\\packages\\",
+      "outputPath": "C:\\Personal\\Projects\\ShitFuck-Engine\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\naufal-jf\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ThinkPad\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -171,7 +171,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
