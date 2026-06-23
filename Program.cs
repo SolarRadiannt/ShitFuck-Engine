@@ -3,12 +3,17 @@ using System.Numerics;
 using fennecs;
 using Raylib_cs;
 using Core;
-const double SPAWN_DURATION = 0.1;
+
 const int WINDOWS_WIDTH = 800;
 const int WINDOWS_HEIGHT = 400;
+
+const double SPAWN_DURATION = 0.1;
 const string TITLE = "ShitFuck Engine";
 
 var world = new World();
+var rng = new Random();
+
+
 
 float spawnAccum = 0;
 
@@ -17,7 +22,7 @@ void SystemSpawn(float dt) {
 	while (spawnAccum > SPAWN_DURATION) {
         world.Spawn()
             .Add(new Position(100, 100))
-            .Add(new Velocity(200, 90))
+            .Add(new Velocity(rng.Next(-100, 100), rng.Next(-100, 100)))
             .Add(new RenderShape(Shapes.Box))
             .Add(new Scale(2));
 
@@ -59,18 +64,18 @@ var stream_no_size = world.Query<RenderShape>().Not<Size>().Stream();
 var stream_no_radius = world.Query<RenderShape>().Not<Radius>().Stream();
 void SystemRenderDefaults() {
 	stream_no_scale.For(
-		static (in Entity entity, ref RenderShape shape) => {
+		static (in Entity entity, ref RenderShape _) => {
 			entity.Add(new Scale(1));
 		});
 	stream_no_color.For(
-		static (in Entity entity, ref RenderShape shape) => {
-			entity.Add(new RenderColor(Color.White));
+		static (in Entity entity, ref RenderShape _) => {
+			entity.Add(new RenderColor(Color.Red));
 		});
     
 	stream_no_size.For(
 		static (in Entity entity, ref RenderShape shape) => {
 			if (shape.Value == Shapes.Box) {
-				entity.Add(new Size(50, 50));
+				entity.Add(new Size(10, 10));
 			}
 		});
 	stream_no_radius.For(
