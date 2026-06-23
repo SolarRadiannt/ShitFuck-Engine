@@ -53,17 +53,18 @@ void SystemBounce()
     });
 }
 
-var stream_no_scale = world.Query().Not<Scale,RenderShape>().Stream();
-var stream_no_color = world.Query().Not<RenderColor, RenderShape>();
+var stream_no_scale = world.Query<RenderShape>().Not<Scale>().Stream();
+var stream_no_color = world.Query<RenderShape>().Not<RenderColor>().Stream();
+
 var stream_no_size = world.Query<RenderShape>().Not<Size>().Stream();
 var stream_no_radius = world.Query<RenderShape>().Not<Radius>().Stream();
 void SystemRenderDefaults() {
     stream_no_scale.For(
-        static (in Entity, entity) => {
+        static (in Entity, entity, ref RenderShape shape) => {
             entity.Add(new Scale(1));
         });
     stream_no_color.For(
-        static (in Entity entity) => {
+        static (in Entity entity, ref RenderShape shape) => {
             entity.Add(new RenderColor(Color.White));
         });
     
