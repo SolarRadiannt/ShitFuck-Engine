@@ -2,7 +2,6 @@ using System.Numerics;
 using Raylib_cs;
 using fennecs;
 using Core;
-using Microsoft.Win32.SafeHandles;
 
 namespace Renderer;
 
@@ -11,6 +10,7 @@ public record struct RenderColor(Color Value);
 
 static class RenderLib {
     private static World _world = CoreLib.World;
+    private static Camera2D _camera;
     
     private static Stream<Position, Scale, RenderShape, RenderColor> _stream_render =
         _world.Stream<Position, Scale, RenderShape, RenderColor>();
@@ -36,13 +36,13 @@ static class RenderLib {
         _stream_no_size.For(
             static (in Entity entity, ref RenderShape shape) => {
                 if (shape.Value == Shapes.Box) {
-                    entity.Add(new Size(10, 10));
+                    entity.Add(new Size(5, 5));
                 }
             });
         _stream_no_radius.For(
             static (in Entity entity, ref RenderShape shape) => {
                 if (shape.Value == Shapes.Circle) {
-                    entity.Add(new Radius(10));
+                    entity.Add(new Radius(5));
                 }
             });
     }
@@ -79,10 +79,22 @@ static class RenderLib {
             });
     }
     
-    
-    
     public static void Update(float dt) {
         _SystemRenderDefaults();
         _SystemRenderEntities();
     }
+
+    public static void InitCamera(int screenWidth, int screenHeight) {
+        _camera = new Camera2D {
+            Target = Vector2.Zero,
+            Offset = new Vector2(screenWidth * 0.5f, screenHeight * 0.5f),
+            Rotation = 0f,
+            Zoom = 1f,
+        };
+    }
+
+    public static void BeginCamera() => Raylib.BeginMode2D(_camera);
+    public static void EndCamera() => Raylib.EndMode2D();
+    
+    
 }

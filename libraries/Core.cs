@@ -1,5 +1,4 @@
-using System.Runtime.InteropServices.Swift;
-using Raylib_cs;
+using System.Numerics;
 using fennecs;
 
 namespace Core;
@@ -10,12 +9,13 @@ public enum Shapes {
 public struct ChildOf;
 
 public struct Destroy;
-
 public record struct Position(float X, float Y);
 public record struct Velocity(float X, float Y);
 public record struct Scale(float Value);
 public record struct Radius(float Value);
 public record struct Size(float X, float Y);
+
+
 public static class CoreLib {
     public static World World = new World();
 
@@ -23,14 +23,28 @@ public static class CoreLib {
         World.Stream<Position, Velocity>();
     private static Stream<Destroy> _stream_destroy = 
         World.Stream<Destroy>();
+
+    private static Stream<Position> _stream_enforce_position =
+        World.Stream<Position>();
+
+    private static Size _boundary;
     
     private static void _SystemMove(float dt) {
         _stream_move.For(
             uniform: dt,
-            static (float dt , ref Position pos, ref Velocity vel) => {
+            static (float dt, ref Position pos, ref Velocity vel) => {
                 pos.X += vel.X * dt;
                 pos.Y += vel.Y * dt;
-            }); 
+            });
+    }
+
+    private static void _SystemEnforcePosition() {
+        _stream_enforce_position.For(
+            uniform: _boundary,
+            static (Size boundary, ref Position pos) => {
+                pos.X = Math.Clamp(pos.X, -boundary.X, boundary.X);
+                pos.Y = Math.Clamp(pos.Y, -boundary.Y, boundary.Y);
+            });
     }
 
     private static void _SystemDestroy() {
@@ -42,9 +56,14 @@ public static class CoreLib {
     
     public static void Update(float dt) {
         _SystemMove(dt);
+        _SystemEnforcePosition();
     }
-
+    
     public static void UpdateLast(float dt) {
         _SystemDestroy();
+    }
+
+    public static void InitMap(float width, float height) {
+        _boundary = new Size(width, height);
     }
 }
