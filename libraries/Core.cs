@@ -18,10 +18,9 @@ public record struct Radius(float Value);
 public record struct Size(float X, float Y);
 public static class CoreLib {
     public static World World = new World();
-    
+
     private static Stream<Position, Velocity> _stream_move =
         World.Stream<Position, Velocity>();
-    
     private static Stream<Destroy> _stream_destroy = 
         World.Stream<Destroy>();
     

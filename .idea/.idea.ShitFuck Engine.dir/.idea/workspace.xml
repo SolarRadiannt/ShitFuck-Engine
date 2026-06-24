@@ -14,24 +14,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5fc9d6d4-e5ee-431c-adf1-6f6fbc7e8bf6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/libraries/Renderer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ShitFuck Engine.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ShitFuck Engine.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libraries/Core.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/Core.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libraries/Renderer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/libraries/Renderer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ShitFuckEngine.sourcelink.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/apphost.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/ref/ShitFuckEngine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/ref/ShitFuckEngine.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/Debug/net10.0/refint/ShitFuckEngine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/obj/Debug/net10.0/refint/ShitFuckEngine.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +109,7 @@
       <workItem from="1782210317118" duration="1900000" />
       <workItem from="1782212309015" duration="1043000" />
       <workItem from="1782223722996" duration="4815000" />
-      <workItem from="1782273940929" duration="3417000" />
+      <workItem from="1782273940929" duration="5292000" />
     </task>
     <servers />
   </component>

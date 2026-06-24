@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
-using fennecs;
 using Raylib_cs;
 using Core;
 using Renderer;
@@ -23,7 +21,7 @@ void SystemSpawn(float dt) {
             .Add(new Position(100, 100))
             .Add(new Velocity(rng.Next(-100, 100), rng.Next(-100, 100)))
             .Add(new RenderShape(Shapes.Box))
-            .Add(new Scale(2));
+            .Add(new Scale(4));
 
 		spawnAccum -= (float)SPAWN_DURATION;
 	}
@@ -32,13 +30,11 @@ void SystemSpawn(float dt) {
 var stream_bounce = world.Stream<Position, Velocity>();
 void SystemBounce() {
     stream_bounce.For(
-    static (ref Position pos, ref Velocity vel) => {
-        if (pos.X >= WINDOWS_WIDTH || pos.X <= 0)
-        {
+    static (ref pos, ref vel) => {
+        if (pos.X >= WINDOWS_WIDTH || pos.X <= 0) {
             vel.X *= -1;
         }
-        if (pos.Y >= WINDOWS_HEIGHT || pos.Y <= 0)
-        {
+        if (pos.Y >= WINDOWS_HEIGHT || pos.Y <= 0) {
             vel.Y *= -1;
         }
     });
@@ -74,7 +70,7 @@ void Main() {
 
 		float dt = (float)(currentTime - previousTime);
 		previousTime = currentTime;
-
+		
 		Raylib.BeginDrawing();
 		MainLoop(dt);
 		Raylib.EndDrawing();

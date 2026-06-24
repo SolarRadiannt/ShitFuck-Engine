@@ -2,6 +2,7 @@ using System.Numerics;
 using Raylib_cs;
 using fennecs;
 using Core;
+using Microsoft.Win32.SafeHandles;
 
 namespace Renderer;
 
@@ -50,7 +51,7 @@ static class RenderLib {
             static (in Entity entity, ref Position pos, ref Scale cscale, ref RenderShape shape, ref RenderColor color) => {
                 (float x, float y) = (pos.X, pos.Y);
                 float scale = cscale.Value;
-        
+                
                 switch (shape.Value) {
                     case Shapes.Circle:
                         float radius = entity.Ref<Radius>().Value * scale;
@@ -58,12 +59,28 @@ static class RenderLib {
                         break;
                     case Shapes.Box: {
                         var size = entity.Ref<Size>();
-                        Raylib.DrawRectangleV(new Vector2(x, y), new Vector2(size.X, size.Y) * scale, color.Value);
+
+                        float scaledWidth = size.X * scale;
+                        float scaledHeight = size.Y * scale;
+                        
+                        float halfX = scaledWidth * 0.5f;
+                        float halfY = scaledHeight * 0.5f;
+                        
+                        Raylib.DrawRectangleV(
+                            new Vector2(x - halfX, y - halfY),
+                            new Vector2(scaledWidth, scaledHeight),
+                            color.Value
+                        );
                         break;
                     }
                 }
+                
+                Raylib.DrawCircleV(new Vector2(x, y), 1, Color.Black);
             });
     }
+    
+    
+    
     public static void Update(float dt) {
         _SystemRenderDefaults();
         _SystemRenderEntities();
