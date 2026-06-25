@@ -7,27 +7,37 @@ using fennecs;
 
 const string TITLE = "ShitFuck Engine";
 
-const int WINDOWS_WIDTH = 800;
-const int WINDOWS_HEIGHT = 400;
+const int WINDOWS_WIDTH = 1200;
+const int WINDOWS_HEIGHT = 650;
 
 const int HALF_W_WIDTH = WINDOWS_WIDTH / 2;
 const int HALF_W_HEIGHT = WINDOWS_HEIGHT / 2;
 
 const int MAX_CELLS = 400;
+const float EFFECT_DIST = 60;
+const float PUSH_FORCE = 60;
+
+/*
+ * NEXT STEP:
+ * MAKE MORE CELL TYPES THAT
+ * MAY ATTRACT MORE/LESS OR REPEL MORE/LESS
+ *
+ * MAKE A CELL 
+ */
 
 var rng = new Random();
 var world = CoreLib.World;
 
-var redSpawner = world.Entity()
-	.Add(new Position(0, 0))
-	.Add(new Velocity(0, 0))
-	.Add(new RenderShape(Shapes.Circle))
-	.Add<RedCell>();
-
 void SetupCells() {
-	redSpawner.Spawn(MAX_CELLS);
+	world.Entity()
+		.Add(new Position(0, 0))
+		.Add(new Velocity(0, 0))
+		.Add(new RenderShape(Shapes.Circle))
+		.Add<Cell>()
+		.Spawn(MAX_CELLS)
+		.Dispose();
 	
-	world.Stream<Position>().For(
+	world.Query<Position>().Has<Cell>().Stream().For(
 		uniform: rng,
 		static (Random rng, ref Position pos) => {
 			pos.X = rng.Next(-HALF_W_WIDTH, HALF_W_WIDTH);
@@ -35,16 +45,16 @@ void SetupCells() {
 		});
 }
 
-var stream_red_cells = world.Query<Position>()
-	.Has<RedCell>()
+var stream_cells = world.Query<Position>()
+	.Has<Cell>()
 	.Stream();
-var stream_repels_other = world.Stream<Position, Velocity, RedCell>();
-
-Entity getClosestEntity(Entity ownEntity, Vector2 origin) {
-	Entity closestEntity = ownEntity;
+var stream_repels_other = world.Stream<Position, Velocity, Cell>();
+ClosestData getClosestEntity(Entity ownEntity, Vector2 origin) {
+	var closestEntity = ownEntity;
 	float closestDist = float.PositiveInfinity;
+	var closestPos = origin;
 	
-	foreach (var v in stream_red_cells)
+	foreach (var v in stream_cells)
 	{
 		var entity = v.Item1;
 		if (entity == ownEntity) { continue; }
@@ -53,25 +63,42 @@ Entity getClosestEntity(Entity ownEntity, Vector2 origin) {
 		var pos = new Vector2(cpos.X, cpos.Y);
 
 		var resultant = pos - origin;
-		if (resultant.Length() < closestDist) {
+		var distance = resultant.Length();
+		if (distance < closestDist) {
 			closestEntity = entity;
+			closestPos = pos;
+			closestDist = distance;
 		}
 	}
-	
-	return closestEntity;
+
+	return new ClosestData {
+		Entity = closestEntity,
+		Position = closestPos,
+		Distance = closestDist,
+	};
 }
 
 
 void SystemRepelsOther()
 {
 	stream_repels_other.For(
-		(in Entity entity, ref Position pos, ref Velocity vel, ref RedCell _) => {
-			var closestEntity = getClosestEntity(entity, new Vector2(pos.X, pos.Y));
+		(in Entity entity, ref Position pos, ref Velocity vel, ref Cell _) => {
+			var mathPos = new Vector2(pos.X, pos.Y);
+			var closestData = getClosestEntity(entity, mathPos);
+			if (closestData.Distance > EFFECT_DIST) { return; }
+
+			float t = 1 - (closestData.Distance / EFFECT_DIST);
+			float force = t * t * PUSH_FORCE;
 			
+			var dir = Vector2.Normalize(mathPos - closestData.Position);
+			vel.X += dir.X * force;
+			vel.Y += dir.Y * force;
 		});
 }
 
-static void MainLoop(float dt) {
+void MainLoop(float dt) {
+	SystemRepelsOther();
+	
 	CoreLib.Update(dt);
 	
 	RenderLib.BeginCamera();
@@ -97,6 +124,7 @@ void Main() {
 		previousTime = currentTime;
 		
 		Raylib.BeginDrawing();
+		Raylib.ClearBackground(Color.Black);
 		MainLoop(dt);
 		Raylib.EndDrawing();
 	}
@@ -109,4 +137,10 @@ CoreLib.InitMap(HALF_W_WIDTH, HALF_W_HEIGHT);
 Main();
 
 
-struct RedCell;
+struct Cell;
+
+struct ClosestData {
+	public Entity Entity;
+	public Vector2 Position;
+	public float Distance;
+}
