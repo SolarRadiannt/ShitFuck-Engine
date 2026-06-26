@@ -4,6 +4,7 @@ using Raylib_cs;
 using Core;
 using Renderer;
 using fennecs;
+using System.Collections.Generic;
 
 const string TITLE = "ShitFuck Engine";
 
@@ -14,7 +15,7 @@ const int HALF_W_WIDTH = WINDOWS_WIDTH / 2;
 const int HALF_W_HEIGHT = WINDOWS_HEIGHT / 2;
 
 const int MAX_CELLS = 400;
-const float EFFECT_DIST = 30;
+const float EFFECT_DIST = 100;
 const float PUSH_FORCE = 200;
 
 /*
@@ -77,21 +78,50 @@ ClosestData getClosestEntity(Entity ownEntity, Vector2 origin) {
 	};
 }
 
+List<FoundData> getCellsFromRadius(Vector2 origin, float radius, Entity ownEntity) {
+	var found = new List<FoundData>();
+
+	foreach (var v in stream_cells) {
+		var entity = v.Item1;
+		if (entity  == ownEntity) { continue; }
+
+		var cpos = v.Item2;
+		var pos = new Vector2(cpos.X, cpos.Y);
+
+		var resultant = origin - pos;
+		var distance = resultant.Length();
+		if (distance <= radius) {
+			found.Add(new FoundData {
+				Entity = entity,
+				Position = pos,
+				Distance = distance,
+			});
+		}
+	}
+
+	return found;
+} 
+
+
 var stream_repels_other = world.Stream<Position, Velocity, Cell>();
-void SystemRepelsOther()
-{
+void SystemRepelsOther() {
 	stream_repels_other.For(
 		(in Entity entity, ref Position pos, ref Velocity vel, ref Cell _) => {
 			var mathPos = new Vector2(pos.X, pos.Y);
-			var closestData = getClosestEntity(entity, mathPos);
-			if (closestData.Distance > EFFECT_DIST) { return; }
 
-			float t = 1 - (closestData.Distance / EFFECT_DIST);
-			float force = t * t * PUSH_FORCE;
-			
-			var dir = Vector2.Normalize(mathPos - closestData.Position);
-			vel.X += dir.X * force;
-			vel.Y += dir.Y * force;
+			var neighbors = getCellsFromRadius(mathPos, EFFECT_DIST, entity);
+			foreach (var data in neighbors) {
+				float t = 1 - (data.Distance / EFFECT_DIST);
+				float force = t * t * PUSH_FORCE;
+
+				var dir = Vector2.Normalize(mathPos - data.Position);
+				var otherVel = data.Entity.Ref<Velocity>();
+				
+				otherVel.X += dir.X * force;
+				otherVel.Y += dir.Y * force;
+
+				Console.WriteLine("repelled velocoty", otherVel);
+			}
 		});
 }
 
@@ -153,6 +183,12 @@ Main();
 struct Cell;
 
 struct ClosestData {
+	public Entity Entity;
+	public Vector2 Position;
+	public float Distance;
+}
+
+struct FoundData {
 	public Entity Entity;
 	public Vector2 Position;
 	public float Distance;
