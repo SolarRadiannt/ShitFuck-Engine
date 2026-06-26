@@ -14,8 +14,8 @@ const int HALF_W_WIDTH = WINDOWS_WIDTH / 2;
 const int HALF_W_HEIGHT = WINDOWS_HEIGHT / 2;
 
 const int MAX_CELLS = 400;
-const float EFFECT_DIST = 60;
-const float PUSH_FORCE = 60;
+const float EFFECT_DIST = 30;
+const float PUSH_FORCE = 200;
 
 /*
  * NEXT STEP:
@@ -48,7 +48,6 @@ void SetupCells() {
 var stream_cells = world.Query<Position>()
 	.Has<Cell>()
 	.Stream();
-var stream_repels_other = world.Stream<Position, Velocity, Cell>();
 ClosestData getClosestEntity(Entity ownEntity, Vector2 origin) {
 	var closestEntity = ownEntity;
 	float closestDist = float.PositiveInfinity;
@@ -78,7 +77,7 @@ ClosestData getClosestEntity(Entity ownEntity, Vector2 origin) {
 	};
 }
 
-
+var stream_repels_other = world.Stream<Position, Velocity, Cell>();
 void SystemRepelsOther()
 {
 	stream_repels_other.For(
@@ -96,7 +95,21 @@ void SystemRepelsOther()
 		});
 }
 
+var stream_bounce = world.Stream<Position, Velocity>();
+void SystemBounce() {
+	stream_bounce.For(
+		static (ref Position pos, ref Velocity vel) => {
+			if (pos.X >= HALF_W_WIDTH || pos.X <= -HALF_W_WIDTH) {
+				vel.X *= -1;
+			}
+			if (pos.Y >= HALF_W_HEIGHT  || pos.Y <= -HALF_W_HEIGHT) {
+				vel.Y *= -1;
+			}
+		});
+}
+
 void MainLoop(float dt) {
+	SystemBounce();
 	SystemRepelsOther();
 	
 	CoreLib.Update(dt);
