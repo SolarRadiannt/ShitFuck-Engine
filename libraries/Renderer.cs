@@ -11,7 +11,6 @@ public record struct RenderColor(Color Value);
 static class RenderLib {
     private static World _world = CoreLib.World;
     private static Camera2D _camera;
-    
     private static Stream<Position, Scale, RenderShape, RenderColor> _stream_render =
         _world.Stream<Position, Scale, RenderShape, RenderColor>();
     private static Stream<RenderShape> _stream_no_scale =
@@ -32,7 +31,6 @@ static class RenderLib {
             static (in Entity entity, ref RenderShape _) => {
                 entity.Add(new RenderColor(Color.Red));
             });
-    
         _stream_no_size.For(
             static (in Entity entity, ref RenderShape shape) => {
                 if (shape.Value == Shapes.Box) {

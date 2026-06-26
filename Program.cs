@@ -95,6 +95,7 @@ List<FoundData> getCellsFromRadius(Vector2 origin, float radius, Entity ownEntit
 				Entity = entity,
 				Position = pos,
 				Distance = distance,
+				Resultant = resultant,
 			});
 		}
 	}
@@ -104,23 +105,22 @@ List<FoundData> getCellsFromRadius(Vector2 origin, float radius, Entity ownEntit
 
 
 var stream_repels_other = world.Stream<Position, Velocity, Cell>();
-void SystemRepelsOther() {
+void SystemRepelsOther(float dt) {
 	stream_repels_other.For(
-		(in Entity entity, ref Position pos, ref Velocity vel, ref Cell _) => {
+		uniform: dt,
+		(float dt, in Entity entity, ref Position pos, ref Velocity vel, ref Cell _) => {
 			var mathPos = new Vector2(pos.X, pos.Y);
 
 			var neighbors = getCellsFromRadius(mathPos, EFFECT_DIST, entity);
 			foreach (var data in neighbors) {
 				float t = 1 - (data.Distance / EFFECT_DIST);
 				float force = t * t * PUSH_FORCE;
-
-				var dir = Vector2.Normalize(mathPos - data.Position);
-				var otherVel = data.Entity.Ref<Velocity>();
+				
+				var dir = Vector2.Normalize(data.Position - mathPos);
+				ref var otherVel = ref data.Entity.Ref<Velocity>();
 				
 				otherVel.X += dir.X * force;
 				otherVel.Y += dir.Y * force;
-
-				Console.WriteLine("repelled velocoty", otherVel);
 			}
 		});
 }
@@ -140,7 +140,7 @@ void SystemBounce() {
 
 void MainLoop(float dt) {
 	SystemBounce();
-	SystemRepelsOther();
+	SystemRepelsOther(dt);
 	
 	CoreLib.Update(dt);
 	
@@ -192,4 +192,5 @@ struct FoundData {
 	public Entity Entity;
 	public Vector2 Position;
 	public float Distance;
+	public Vector2 Resultant;
 }
