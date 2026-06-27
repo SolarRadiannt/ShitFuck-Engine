@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ShitFuckEngine")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd5a11a61111694005a3cea04f514a42184fb986")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28cb703faf2d4e00228d7a05b112f6893b21ce2a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ShitFuckEngine")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ShitFuckEngine")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

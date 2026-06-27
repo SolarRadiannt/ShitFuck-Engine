@@ -17,7 +17,8 @@ const int HALF_W_WIDTH = WINDOWS_WIDTH / 2;
 const int HALF_W_HEIGHT = WINDOWS_HEIGHT / 2;
 
 const int RED_CELLS = 200;
-const int YELLOW_CELLS = 300;
+const int YELLOW_CELLS = 200;
+const int BLUE_CELLS = 200;
 
 var rng = new Random();
 var world = CoreLib.World;
@@ -26,6 +27,7 @@ void spawnCells(CellType type, int amount) {
 	var color = type switch {
 		CellType.Red => Color.Red,
 		CellType.Yellow => Color.Yellow,
+		CellType.Blue => Color.Blue,
 	};
 	
 	world.Entity()
@@ -41,6 +43,7 @@ void spawnCells(CellType type, int amount) {
 void SetupCells() {
 	spawnCells(CellType.Red, RED_CELLS);
 	spawnCells(CellType.Yellow, YELLOW_CELLS);
+	spawnCells(CellType.Blue, BLUE_CELLS);
 	
 	world.Query<Position>().Has<Cell>().Stream().For(
 		uniform: rng,
@@ -79,18 +82,11 @@ void SystemApplyForces(float dt) {
 				var resultant = mathPos - otherPos;
 				var distance = resultant.Length();
 				
-				if (distance <= behavior.RepulseDistance) {
+				if (distance <= behavior.Distance) {
 					var repelResult = resultant;
 					var dir = Vector2.Normalize(repelResult);
 					
-					var force = getForce(distance, behavior.RepulseDistance, behavior.RepulseForce) * dt;
-					applyForce(otherEntity, force, dir);
-				}
-				if (distance <= behavior.PullDistance) {
-					var pullResult= otherPos - mathPos;
-					var dir = Vector2.Normalize(pullResult);
-					
-					var force = getForce(distance, behavior.PullDistance, behavior.PullForce) * dt;
+					var force = getForce(distance, behavior.Distance, behavior.Force) * dt;
 					applyForce(otherEntity, force, dir);
 				}
 			}
@@ -111,18 +107,21 @@ void SystemBounce() {
 		});
 }
 
+
 void MainLoop(float dt) {
 	SystemApplyForces(dt);
-	
 	SystemBounce();
-	
 	CoreLib.Update(dt);
-	
+    CoreLib.UpdateLast(dt);
+}
+
+void RenderLoop(float dt) {
+	Raylib.BeginDrawing();
+	Raylib.ClearBackground(Color.Black);
 	RenderLib.BeginCamera();
 	RenderLib.Update(dt);
 	RenderLib.EndCamera();
-	
-    CoreLib.UpdateLast(dt);
+	Raylib.EndDrawing();
 }
 
 void Main() {
@@ -138,12 +137,11 @@ void Main() {
 		double currentTime = stopwatch.Elapsed.TotalSeconds;
 
 		float dt = (float)(currentTime - previousTime);
+		
 		previousTime = currentTime;
 		
-		Raylib.BeginDrawing();
-		Raylib.ClearBackground(Color.Black);
 		MainLoop(dt);
-		Raylib.EndDrawing();
+		RenderLoop(dt);
 	}
 
 	Raylib.CloseWindow();
@@ -153,24 +151,33 @@ RenderLib.InitCamera(WINDOWS_WIDTH, WINDOWS_HEIGHT);
 CoreLib.InitMap(HALF_W_WIDTH, HALF_W_HEIGHT);
 Main();
 
-
 enum CellType {
 	Red,
 	Yellow,
+	Blue,
 };
 record struct Cell(CellType Type);
 public record struct CellBehavior(
     float Force,
 	float Distance
 );
-
 public static class CellsInteractions {
+	private static readonly Random _rng = new();
+	private static float _rval(){
+		return _rng.Next(-100, 100);
+	}
 	private static readonly Dictionary<(CellType, CellType), CellBehavior> _behaviors = new() {
-		[(CellType.Red, CellType.Yellow)] = new(0f, 0f, 150f, 190f),
-		[(CellType.Yellow, CellType.Red)] = new(200f, 100f, 0f, 0f),
+		[(CellType.Red, CellType.Red)] = new(_rval(), _rval()),
+		[(CellType.Red, CellType.Yellow)] = new(_rval(), _rval()),
+		[(CellType.Red, CellType.Blue)] = new(_rval(), _rval()),
 		
-		[(CellType.Red, CellType.Red)] = new(40f, 70f, 60f, 50f),
-		[(CellType.Yellow, CellType.Yellow)] = new(0f, 0f, 0f, 0f),
+		[(CellType.Blue, CellType.Blue)] = new(_rval(), _rval()),
+		[(CellType.Blue, CellType.Red)] = new(_rval(), _rval()),
+		[(CellType.Blue, CellType.Yellow)] = new(_rval(), _rval()),
+		
+		[(CellType.Yellow, CellType.Yellow)] = new(_rval(), _rval()),
+		[(CellType.Yellow, CellType.Blue)] = new(_rval(), _rval()),
+		[(CellType.Yellow, CellType.Red)] = new(_rval(), _rval()),
 	};
 	
 	public static CellBehavior GetBehavior(Entity entity, Entity otherEntity) {
