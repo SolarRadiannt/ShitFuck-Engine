@@ -67,8 +67,8 @@ public static class CoreLib {
     }
     
     public static void Update(float dt) {
-        _ApplyDrag(dt);
         _SystemMove(dt);
+        _ApplyDrag(dt);
         _SystemEnforcePosition();
     }
     
