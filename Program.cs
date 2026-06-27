@@ -1,12 +1,7 @@
 ﻿using System.Diagnostics;
-using System.Numerics;
 using Raylib_cs;
 using Core;
 using Renderer;
-using fennecs;
-using System.Collections.Generic;
-using System.Xml;
-using System.Runtime.InteropServices;
 
 const string TITLE = "ShitFuck Engine";
 
@@ -36,7 +31,7 @@ void SystemBounce() {
 void MainLoop(float dt) {
 	SystemBounce();
 	CoreLib.Update(dt);
-    CoreLib.UpdateLast(dt);
+	CoreLib.UpdateLast(dt);
 }
 
 static void RenderLoop(float dt) {
