@@ -17,8 +17,9 @@ public record struct Size(float X, float Y);
 
 
 public static class CoreLib {
+    private static float DRAG = 0.9f;
+    
     public static World World = new World();
-
     private static Stream<Position, Velocity> _stream_move =
         World.Stream<Position, Velocity>();
     private static Stream<Destroy> _stream_destroy = 
@@ -27,7 +28,18 @@ public static class CoreLib {
     private static Stream<Position> _stream_enforce_position =
         World.Stream<Position>();
 
+    private static Stream<Velocity> _stream_velocity_to_drag =
+        World.Stream<Velocity>();
+    
     private static Size _boundary;
+    private static void _ApplyDrag(float dt) {
+        _stream_velocity_to_drag.For(
+            uniform: MathF.Pow(DRAG, dt),
+            static (float drag, ref Velocity vel) => {
+                vel.X *= drag;
+                vel.Y *= drag;
+            });
+    }
     
     private static void _SystemMove(float dt) {
         _stream_move.For(
@@ -55,6 +67,7 @@ public static class CoreLib {
     }
     
     public static void Update(float dt) {
+        _ApplyDrag(dt);
         _SystemMove(dt);
         _SystemEnforcePosition();
     }
