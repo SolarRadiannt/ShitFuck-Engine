@@ -11,7 +11,6 @@ public record struct RenderColor(Color Value);
 static class RenderLib {
     private static World _world = CoreLib.World;
     private static Camera2D _camera;
-    
     private static Stream<Position, Scale, RenderShape, RenderColor> _stream_render =
         _world.Stream<Position, Scale, RenderShape, RenderColor>();
     private static Stream<RenderShape> _stream_no_scale =
@@ -23,7 +22,7 @@ static class RenderLib {
     private static Stream<RenderShape> _stream_no_radius =
         _world.Query<RenderShape>().Not<Radius>().Stream();
 
-    private static void _SystemRenderDefaults() {
+    private static void _SystemApplyDefaults() {
         _stream_no_scale.For(
             static (in Entity entity, ref RenderShape _) => {
                 entity.Add(new Scale(1));
@@ -32,7 +31,6 @@ static class RenderLib {
             static (in Entity entity, ref RenderShape _) => {
                 entity.Add(new RenderColor(Color.Red));
             });
-    
         _stream_no_size.For(
             static (in Entity entity, ref RenderShape shape) => {
                 if (shape.Value == Shapes.Box) {
@@ -51,21 +49,23 @@ static class RenderLib {
             static (in Entity entity, ref Position pos, ref Scale cscale, ref RenderShape shape, ref RenderColor color) => {
                 (float x, float y) = (pos.X, pos.Y);
                 float scale = cscale.Value;
-                
-                switch (shape.Value) {
+
+                switch (shape.Value)
+                {
                     case Shapes.Circle:
                         float radius = entity.Ref<Radius>().Value * scale;
                         Raylib.DrawCircleV(new Vector2(x, y), radius, color.Value);
                         break;
-                    case Shapes.Box: {
+                    case Shapes.Box:
+                    {
                         var size = entity.Ref<Size>();
 
                         float scaledWidth = size.X * scale;
                         float scaledHeight = size.Y * scale;
-                        
+
                         float halfX = scaledWidth * 0.5f;
                         float halfY = scaledHeight * 0.5f;
-                        
+
                         Raylib.DrawRectangleV(
                             new Vector2(x - halfX, y - halfY),
                             new Vector2(scaledWidth, scaledHeight),
@@ -74,13 +74,11 @@ static class RenderLib {
                         break;
                     }
                 }
-                
-                Raylib.DrawCircleV(new Vector2(x, y), 1, Color.Black);
             });
     }
     
     public static void Update(float dt) {
-        _SystemRenderDefaults();
+        _SystemApplyDefaults();
         _SystemRenderEntities();
     }
 

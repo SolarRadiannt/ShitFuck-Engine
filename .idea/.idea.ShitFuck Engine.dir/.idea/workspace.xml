@@ -16,7 +16,6 @@
     <list default="true" id="5fc9d6d4-e5ee-431c-adf1-6f6fbc7e8bf6" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ShitFuck Engine.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ShitFuck Engine.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ShitFuckEngine.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/ShitFuckEngine.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.dll" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.exe" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/bin/Debug/net10.0/ShitFuckEngine.pdb" afterDir="false" />
@@ -44,6 +43,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/66e86cb8e85148a9a531567a2fb8c0eef45728/cb/16a4e832/Vector2.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2,
@@ -69,7 +71,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;attract-and-repel-simulation&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -112,7 +114,8 @@
       <workItem from="1782210317118" duration="1900000" />
       <workItem from="1782212309015" duration="1043000" />
       <workItem from="1782223722996" duration="4815000" />
-      <workItem from="1782273940929" duration="10414000" />
+      <workItem from="1782273940929" duration="21392000" />
+      <workItem from="1782382874589" duration="2790000" />
     </task>
     <servers />
   </component>
