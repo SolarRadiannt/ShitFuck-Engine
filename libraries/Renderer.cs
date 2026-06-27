@@ -22,7 +22,7 @@ static class RenderLib {
     private static Stream<RenderShape> _stream_no_radius =
         _world.Query<RenderShape>().Not<Radius>().Stream();
 
-    private static void _SystemRenderDefaults() {
+    private static void _SystemApplyDefaults() {
         _stream_no_scale.For(
             static (in Entity entity, ref RenderShape _) => {
                 entity.Add(new Scale(1));
@@ -78,7 +78,7 @@ static class RenderLib {
     }
     
     public static void Update(float dt) {
-        _SystemRenderDefaults();
+        _SystemApplyDefaults();
         _SystemRenderEntities();
     }
 

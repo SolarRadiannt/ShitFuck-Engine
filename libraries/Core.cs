@@ -33,9 +33,8 @@ public static class CoreLib {
     
     private static Size _boundary;
     private static void _ApplyDrag(float dt) {
-        float frameDrag = MathF.Pow(DRAG, dt);
         _stream_velocity_to_drag.For(
-            uniform: frameDrag,
+            uniform: MathF.Pow(DRAG, dt),
             static (float drag, ref Velocity vel) => {
                 vel.X *= drag;
                 vel.Y *= drag;

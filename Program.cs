@@ -5,6 +5,8 @@ using Core;
 using Renderer;
 using fennecs;
 using System.Collections.Generic;
+using System.Xml;
+using System.Runtime.InteropServices;
 
 const string TITLE = "ShitFuck Engine";
 
@@ -14,29 +16,31 @@ const int WINDOWS_HEIGHT = 650;
 const int HALF_W_WIDTH = WINDOWS_WIDTH / 2;
 const int HALF_W_HEIGHT = WINDOWS_HEIGHT / 2;
 
-const int MAX_CELLS = 400;
-const float EFFECT_DIST = 100;
-const float PUSH_FORCE = 200;
-
-/*
- * NEXT STEP:
- * MAKE MORE CELL TYPES THAT
- * MAY ATTRACT MORE/LESS OR REPEL MORE/LESS
- *
- * MAKE A CELL 
- */
+const int RED_CELLS = 200;
+const int YELLOW_CELLS = 300;
 
 var rng = new Random();
 var world = CoreLib.World;
 
-void SetupCells() {
+void spawnCells(CellType type, int amount) {
+	var color = type switch {
+		CellType.Red => Color.Red,
+		CellType.Yellow => Color.Yellow,
+	};
+	
 	world.Entity()
 		.Add(new Position(0, 0))
 		.Add(new Velocity(0, 0))
 		.Add(new RenderShape(Shapes.Circle))
-		.Add<Cell>()
-		.Spawn(MAX_CELLS)
+		.Add(new RenderColor(color))
+		.Add(new Cell(type))
+		.Spawn(amount)
 		.Dispose();
+}
+
+void SetupCells() {
+	spawnCells(CellType.Red, RED_CELLS);
+	spawnCells(CellType.Yellow, YELLOW_CELLS);
 	
 	world.Query<Position>().Has<Cell>().Stream().For(
 		uniform: rng,
@@ -46,84 +50,53 @@ void SetupCells() {
 		});
 }
 
-var stream_cells = world.Query<Position>()
-	.Has<Cell>()
-	.Stream();
-ClosestData getClosestEntity(Entity ownEntity, Vector2 origin) {
-	var closestEntity = ownEntity;
-	float closestDist = float.PositiveInfinity;
-	var closestPos = origin;
-	
-	foreach (var v in stream_cells)
-	{
-		var entity = v.Item1;
-		if (entity == ownEntity) { continue; }
-		
-		var cpos = v.Item2;
-		var pos = new Vector2(cpos.X, cpos.Y);
-
-		var resultant = pos - origin;
-		var distance = resultant.Length();
-		if (distance < closestDist) {
-			closestEntity = entity;
-			closestPos = pos;
-			closestDist = distance;
-		}
-	}
-
-	return new ClosestData {
-		Entity = closestEntity,
-		Position = closestPos,
-		Distance = closestDist,
-	};
+static float getForce(float distance, float maxDistance, float force) {
+	float t = 1 - (distance / maxDistance);
+	return t * t * force;
 }
 
-List<FoundData> getCellsFromRadius(Vector2 origin, float radius, Entity ownEntity) {
-	var found = new List<FoundData>();
+static void applyForce(Entity entity, float force, Vector2 dir) {
+	ref var vel = ref entity.Ref<Velocity>();
+	vel.X += dir.X * force;
+	vel.Y += dir.Y * force;
+}
 
-	foreach (var v in stream_cells) {
-		var entity = v.Item1;
-		if (entity  == ownEntity) { continue; }
-
-		var cpos = v.Item2;
-		var pos = new Vector2(cpos.X, cpos.Y);
-
-		var resultant = origin - pos;
-		var distance = resultant.Length();
-		if (distance <= radius) {
-			found.Add(new FoundData {
-				Entity = entity,
-				Position = pos,
-				Distance = distance,
-				Resultant = resultant,
-			});
-		}
-	}
-
-	return found;
-} 
-
-
-var stream_repels_other = world.Stream<Position, Velocity, Cell>();
-void SystemRepelsOther(float dt) {
-	stream_repels_other.For(
+var stream_sim_query = world.Stream<Position, Cell>();
+void SystemApplyForces(float dt) {
+	stream_sim_query.For(
 		uniform: dt,
-		(float dt, in Entity entity, ref Position pos, ref Velocity vel, ref Cell _) => {
+		static (float dt, in Entity entity, ref Position pos, ref Cell _) => {
 			var mathPos = new Vector2(pos.X, pos.Y);
-
-			var neighbors = getCellsFromRadius(mathPos, EFFECT_DIST, entity);
-			foreach (var data in neighbors) {
-				float t = 1 - (data.Distance / EFFECT_DIST);
-				float force = t * t * PUSH_FORCE;
+			
+			foreach (var v in CoreLib.World.Query<Position, Velocity>().Has<Cell>().Stream()) {
+				var otherEntity = v.Item1;
+				if (entity == otherEntity) continue;
 				
-				var dir = Vector2.Normalize(data.Position - mathPos);
-				ref var otherVel = ref data.Entity.Ref<Velocity>();
+				var otherPos = new Vector2(v.Item2.X, v.Item2.Y);
+				var otherVel = v.Item3;
 				
-				otherVel.X += dir.X * force;
-				otherVel.Y += dir.Y * force;
+				var behavior = CellsInteractions.GetBehavior(entity, otherEntity);
+				var resultant = mathPos - otherPos;
+				var distance = resultant.Length();
+				
+				if (distance <= behavior.RepulseDistance) {
+					var repelResult = resultant;
+					var dir = Vector2.Normalize(repelResult);
+					
+					var force = getForce(distance, behavior.RepulseDistance, behavior.RepulseForce) * dt;
+					applyForce(otherEntity, force, dir);
+				}
+				if (distance <= behavior.PullDistance) {
+					var pullResult= otherPos - mathPos;
+					var dir = Vector2.Normalize(pullResult);
+					
+					var force = getForce(distance, behavior.PullDistance, behavior.PullForce) * dt;
+					applyForce(otherEntity, force, dir);
+				}
 			}
 		});
 }
+
 
 var stream_bounce = world.Stream<Position, Velocity>();
 void SystemBounce() {
@@ -139,8 +112,9 @@ void SystemBounce() {
 }
 
 void MainLoop(float dt) {
+	SystemApplyForces(dt);
+	
 	SystemBounce();
-	SystemRepelsOther(dt);
 	
 	CoreLib.Update(dt);
 	
@@ -180,17 +154,29 @@ CoreLib.InitMap(HALF_W_WIDTH, HALF_W_HEIGHT);
 Main();
 
 
-struct Cell;
+enum CellType {
+	Red,
+	Yellow,
+};
+record struct Cell(CellType Type);
+public record struct CellBehavior(
+    float Force,
+	float Distance
+);
 
-struct ClosestData {
-	public Entity Entity;
-	public Vector2 Position;
-	public float Distance;
-}
-
-struct FoundData {
-	public Entity Entity;
-	public Vector2 Position;
-	public float Distance;
-	public Vector2 Resultant;
+public static class CellsInteractions {
+	private static readonly Dictionary<(CellType, CellType), CellBehavior> _behaviors = new() {
+		[(CellType.Red, CellType.Yellow)] = new(0f, 0f, 150f, 190f),
+		[(CellType.Yellow, CellType.Red)] = new(200f, 100f, 0f, 0f),
+		
+		[(CellType.Red, CellType.Red)] = new(40f, 70f, 60f, 50f),
+		[(CellType.Yellow, CellType.Yellow)] = new(0f, 0f, 0f, 0f),
+	};
+	
+	public static CellBehavior GetBehavior(Entity entity, Entity otherEntity) {
+		return _behaviors[(
+			entity.Ref<Cell>().Type,
+			otherEntity.Ref<Cell>().Type
+		)];
+	}
 }

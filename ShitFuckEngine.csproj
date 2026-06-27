@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Inclide="Core.cs">
+    <Compile Include="libraries/Core.cs" />
+    <Compile Include="libraries/Renderer.cs" />
     
     <PackageReference Include="fennecs" Version="0.6.12" />
     <PackageReference Include="Raylib-cs" Version="8.0.0" />
